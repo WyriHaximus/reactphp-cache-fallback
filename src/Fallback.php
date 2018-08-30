@@ -8,31 +8,31 @@ use function React\Promise\all;
 final class Fallback implements CacheInterface
 {
     /** @var CacheInterface */
-    private $primairy;
+    private $primary;
 
     /** @var CacheInterface */
     private $fallback;
 
     /**
-     * @param CacheInterface $primairy
+     * @param CacheInterface $primary
      * @param CacheInterface $fallback
      */
-    public function __construct(CacheInterface $primairy, CacheInterface $fallback)
+    public function __construct(CacheInterface $primary, CacheInterface $fallback)
     {
-        $this->primairy = $primairy;
+        $this->primary = $primary;
         $this->fallback = $fallback;
     }
 
     public function get($key, $default = null)
     {
-        return $this->primairy->get($key, $default)->then(function ($value) use ($key, $default) {
+        return $this->primary->get($key, $default)->then(function ($value) use ($key, $default) {
             if ($value === null || $value === $default) {
                 return $this->fallback->get($key, $default);
             }
 
             return $value;
         })->then(function ($value) use ($key) {
-            $this->primairy->set($key, $value);
+            $this->primary->set($key, $value);
 
             return $value;
         });
@@ -41,10 +41,10 @@ final class Fallback implements CacheInterface
     public function set($key, $value, $ttl = null)
     {
         return all([
-            'primairy' => $this->primairy->set($key, $value, $ttl),
+            'primary' => $this->primary->set($key, $value, $ttl),
             'fallback' => $this->fallback->set($key, $value, $ttl),
         ])->then(function (array $bool) {
-            return $bool['primairy'] === true && $bool['fallback'] === true;
+            return $bool['primary'] === true && $bool['fallback'] === true;
         }, function () {
             return false;
         });
@@ -53,10 +53,10 @@ final class Fallback implements CacheInterface
     public function delete($key)
     {
         return all([
-            'primairy' => $this->primairy->delete($key),
+            'primary' => $this->primary->delete($key),
             'fallback' => $this->fallback->delete($key),
         ])->then(function (array $bool) {
-            return $bool['primairy'] === true && $bool['fallback'] === true;
+            return $bool['primary'] === true && $bool['fallback'] === true;
         }, function () {
             return false;
         });
