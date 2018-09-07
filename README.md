@@ -15,6 +15,19 @@ To install via [Composer](http://getcomposer.org/), use the command below, it wi
 composer require wyrihaximus/react-cache-fallback 
 ```
 
+# Usage
+
+The following example will first try to get he item from the `ArrayCache` before 
+falling back to `$fallback` on `get`. When it gets something from `$fallback` it will 
+also set it to `ArrayCache`. All `set` and `delete` calls will go to both.
+
+```php
+$cache = new Fallback(
+    new ArrayCache(5),
+    $fallback
+);
+```
+
 # License
 
 The MIT License (MIT)
