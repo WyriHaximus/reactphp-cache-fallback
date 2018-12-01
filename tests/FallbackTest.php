@@ -7,9 +7,12 @@ use React\Cache\CacheInterface;
 use WyriHaximus\React\Cache\Fallback;
 use function React\Promise\resolve;
 
+/**
+ * @internal
+ */
 final class FallbackTest extends TestCase
 {
-    public function testGetprimaryHasItem()
+    public function testGetprimaryHasItem(): void
     {
         $key = 'sleutel';
         $json = [
@@ -28,7 +31,7 @@ final class FallbackTest extends TestCase
         self::assertSame($json, $this->await($fallbackCache->get($key)));
     }
 
-    public function testGetFallbackHasItemAndWIllBeAddedToprimary()
+    public function testGetFallbackHasItemAndWIllBeAddedToprimary(): void
     {
         $key = 'sleutel';
         $json = [
@@ -47,7 +50,7 @@ final class FallbackTest extends TestCase
         self::assertSame($json, $this->await($fallbackCache->get($key)));
     }
 
-    public function testSet()
+    public function testSet(): void
     {
         $key = 'sleutel';
         $json = [
@@ -66,7 +69,7 @@ final class FallbackTest extends TestCase
         self::assertTrue($result);
     }
 
-    public function testSetOneFails()
+    public function testSetOneFails(): void
     {
         $key = 'sleutel';
         $json = [
@@ -85,7 +88,7 @@ final class FallbackTest extends TestCase
         self::assertFalse($result);
     }
 
-    public function testRemove()
+    public function testRemove(): void
     {
         $key = 'sleutel';
 
