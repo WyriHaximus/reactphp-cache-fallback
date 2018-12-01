@@ -1,10 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "870ddce9f7e23bdcea1b74990ab52abd",
+    "content-hash": "dd8d4eb2e1ace0d411e6434f2bc1d535",
     "packages": [
         {
             "name": "react/cache",
