@@ -2,15 +2,15 @@
 
 namespace WyriHaximus\Tests\React\Cache;
 
-use ApiClients\Tools\TestUtilities\TestCase;
 use React\Cache\CacheInterface;
 use function React\Promise\resolve;
+use WyriHaximus\AsyncTestUtilities\AsyncTestCase;
 use WyriHaximus\React\Cache\Fallback;
 
 /**
  * @internal
  */
-final class FallbackTest extends TestCase
+final class FallbackTest extends AsyncTestCase
 {
     public function testGetprimaryHasItem(): void
     {
