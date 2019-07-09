@@ -12,7 +12,7 @@ use WyriHaximus\React\Cache\Fallback;
  */
 final class FallbackTest extends AsyncTestCase
 {
-    public function testGetprimaryHasItem(): void
+    public function testGetPrimaryHasItem(): void
     {
         $key = 'sleutel';
         $json = [
@@ -31,7 +31,7 @@ final class FallbackTest extends AsyncTestCase
         self::assertSame($json, $this->await($fallbackCache->get($key)));
     }
 
-    public function testGetFallbackHasItemAndWIllBeAddedToprimary(): void
+    public function testGetFallbackHasItemAndWIllBeAddedToPrimary(): void
     {
         $key = 'sleutel';
         $json = [
