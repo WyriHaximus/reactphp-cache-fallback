@@ -89,6 +89,25 @@ final class FallbackTest extends AsyncTestCase
         self::assertFalse($result);
     }
 
+    public function testSetException(): void
+    {
+        $key = 'sleutel';
+        $json = [
+            'foo' => 'bar',
+        ];
+        $ttl = 123;
+
+        $primary = $this->prophesize(CacheInterface::class);
+        $primary->set($key, $json, $ttl)->shouldBeCalled()->wilLReturn(reject(new \Exception('fail!')));
+
+        $fallback = $this->prophesize(CacheInterface::class);
+        $fallback->set($key, $json, $ttl)->shouldBeCalled()->willReturn(resolve(true));
+
+        $fallbackCache = new Fallback($primary->reveal(), $fallback->reveal());
+        $result = $this->await($fallbackCache->set($key, $json, $ttl));
+        self::assertFalse($result);
+    }
+
     public function testRemove(): void
     {
         $key = 'sleutel';
