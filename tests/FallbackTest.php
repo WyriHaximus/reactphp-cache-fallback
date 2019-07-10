@@ -3,6 +3,7 @@
 namespace WyriHaximus\Tests\React\Cache;
 
 use React\Cache\CacheInterface;
+use function React\Promise\reject;
 use function React\Promise\resolve;
 use WyriHaximus\AsyncTestUtilities\AsyncTestCase;
 use WyriHaximus\React\Cache\Fallback;
@@ -93,12 +94,26 @@ final class FallbackTest extends AsyncTestCase
         $key = 'sleutel';
 
         $primary = $this->prophesize(CacheInterface::class);
-        $primary->delete($key)->shouldBeCalled();
+        $primary->delete($key)->shouldBeCalled()->wilLReturn(resolve(true));
 
         $fallback = $this->prophesize(CacheInterface::class);
-        $fallback->delete($key)->shouldBeCalled();
+        $fallback->delete($key)->shouldBeCalled()->wilLReturn(resolve(true));
 
         $fallbackCache = new Fallback($primary->reveal(), $fallback->reveal());
-        $fallbackCache->delete($key);
+        self::assertTrue($this->await($fallbackCache->delete($key)));
+    }
+
+    public function testRemoveException(): void
+    {
+        $key = 'sleutel';
+
+        $primary = $this->prophesize(CacheInterface::class);
+        $primary->delete($key)->shouldBeCalled()->wilLReturn(reject(new \Exception('fail!')));
+
+        $fallback = $this->prophesize(CacheInterface::class);
+        $fallback->delete($key)->shouldBeCalled()->wilLReturn(resolve(true));
+
+        $fallbackCache = new Fallback($primary->reveal(), $fallback->reveal());
+        self::assertFalse($this->await($fallbackCache->delete($key)));
     }
 }
