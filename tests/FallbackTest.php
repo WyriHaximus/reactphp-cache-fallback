@@ -1,12 +1,16 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace WyriHaximus\Tests\React\Cache;
 
+use Exception;
 use React\Cache\CacheInterface;
-use function React\Promise\reject;
-use function React\Promise\resolve;
 use WyriHaximus\AsyncTestUtilities\AsyncTestCase;
 use WyriHaximus\React\Cache\Fallback;
+
+use function React\Promise\reject;
+use function React\Promise\resolve;
 
 /**
  * @internal
@@ -15,10 +19,8 @@ final class FallbackTest extends AsyncTestCase
 {
     public function testGetPrimaryHasItem(): void
     {
-        $key = 'sleutel';
-        $json = [
-            'foo' => 'bar',
-        ];
+        $key     = 'sleutel';
+        $json    = ['foo' => 'bar'];
         $default = null;
 
         $primary = $this->prophesize(CacheInterface::class);
@@ -34,10 +36,8 @@ final class FallbackTest extends AsyncTestCase
 
     public function testGetFallbackHasItemAndWIllBeAddedToPrimary(): void
     {
-        $key = 'sleutel';
-        $json = [
-            'foo' => 'bar',
-        ];
+        $key     = 'sleutel';
+        $json    = ['foo' => 'bar'];
         $default = null;
 
         $primary = $this->prophesize(CacheInterface::class);
@@ -53,11 +53,9 @@ final class FallbackTest extends AsyncTestCase
 
     public function testSet(): void
     {
-        $key = 'sleutel';
-        $json = [
-            'foo' => 'bar',
-        ];
-        $ttl = 123;
+        $key  = 'sleutel';
+        $json = ['foo' => 'bar'];
+        $ttl  = 123;
 
         $primary = $this->prophesize(CacheInterface::class);
         $primary->set($key, $json, $ttl)->shouldBeCalled()->willReturn(resolve(true));
@@ -66,17 +64,15 @@ final class FallbackTest extends AsyncTestCase
         $fallback->set($key, $json, $ttl)->shouldBeCalled()->willReturn(resolve(true));
 
         $fallbackCache = new Fallback($primary->reveal(), $fallback->reveal());
-        $result = $this->await($fallbackCache->set($key, $json, $ttl));
+        $result        = $this->await($fallbackCache->set($key, $json, $ttl));
         self::assertTrue($result);
     }
 
     public function testSetOneFails(): void
     {
-        $key = 'sleutel';
-        $json = [
-            'foo' => 'bar',
-        ];
-        $ttl = 123;
+        $key  = 'sleutel';
+        $json = ['foo' => 'bar'];
+        $ttl  = 123;
 
         $primary = $this->prophesize(CacheInterface::class);
         $primary->set($key, $json, $ttl)->shouldBeCalled()->willReturn(resolve(false));
@@ -85,26 +81,24 @@ final class FallbackTest extends AsyncTestCase
         $fallback->set($key, $json, $ttl)->shouldBeCalled()->willReturn(resolve(true));
 
         $fallbackCache = new Fallback($primary->reveal(), $fallback->reveal());
-        $result = $this->await($fallbackCache->set($key, $json, $ttl));
+        $result        = $this->await($fallbackCache->set($key, $json, $ttl));
         self::assertFalse($result);
     }
 
     public function testSetException(): void
     {
-        $key = 'sleutel';
-        $json = [
-            'foo' => 'bar',
-        ];
-        $ttl = 123;
+        $key  = 'sleutel';
+        $json = ['foo' => 'bar'];
+        $ttl  = 123;
 
         $primary = $this->prophesize(CacheInterface::class);
-        $primary->set($key, $json, $ttl)->shouldBeCalled()->wilLReturn(reject(new \Exception('fail!')));
+        $primary->set($key, $json, $ttl)->shouldBeCalled()->willReturn(reject(new Exception('fail!')));
 
         $fallback = $this->prophesize(CacheInterface::class);
         $fallback->set($key, $json, $ttl)->shouldBeCalled()->willReturn(resolve(true));
 
         $fallbackCache = new Fallback($primary->reveal(), $fallback->reveal());
-        $result = $this->await($fallbackCache->set($key, $json, $ttl));
+        $result        = $this->await($fallbackCache->set($key, $json, $ttl));
         self::assertFalse($result);
     }
 
@@ -113,10 +107,10 @@ final class FallbackTest extends AsyncTestCase
         $key = 'sleutel';
 
         $primary = $this->prophesize(CacheInterface::class);
-        $primary->delete($key)->shouldBeCalled()->wilLReturn(resolve(true));
+        $primary->delete($key)->shouldBeCalled()->willReturn(resolve(true));
 
         $fallback = $this->prophesize(CacheInterface::class);
-        $fallback->delete($key)->shouldBeCalled()->wilLReturn(resolve(true));
+        $fallback->delete($key)->shouldBeCalled()->willReturn(resolve(true));
 
         $fallbackCache = new Fallback($primary->reveal(), $fallback->reveal());
         self::assertTrue($this->await($fallbackCache->delete($key)));
@@ -127,10 +121,10 @@ final class FallbackTest extends AsyncTestCase
         $key = 'sleutel';
 
         $primary = $this->prophesize(CacheInterface::class);
-        $primary->delete($key)->shouldBeCalled()->wilLReturn(reject(new \Exception('fail!')));
+        $primary->delete($key)->shouldBeCalled()->willReturn(reject(new Exception('fail!')));
 
         $fallback = $this->prophesize(CacheInterface::class);
-        $fallback->delete($key)->shouldBeCalled()->wilLReturn(resolve(true));
+        $fallback->delete($key)->shouldBeCalled()->willReturn(resolve(true));
 
         $fallbackCache = new Fallback($primary->reveal(), $fallback->reveal());
         self::assertFalse($this->await($fallbackCache->delete($key)));
@@ -141,10 +135,10 @@ final class FallbackTest extends AsyncTestCase
         $key = 'sleutel';
 
         $primary = $this->prophesize(CacheInterface::class);
-        $primary->has($key)->shouldBeCalled()->wilLReturn(resolve(true));
+        $primary->has($key)->shouldBeCalled()->willReturn(resolve(true));
 
         $fallback = $this->prophesize(CacheInterface::class);
-        $fallback->has($key)->shouldBeCalled()->wilLReturn(resolve(true));
+        $fallback->has($key)->shouldBeCalled()->willReturn(resolve(true));
 
         $fallbackCache = new Fallback($primary->reveal(), $fallback->reveal());
         self::assertTrue($this->await($fallbackCache->has($key)));
@@ -155,10 +149,10 @@ final class FallbackTest extends AsyncTestCase
         $key = 'sleutel';
 
         $primary = $this->prophesize(CacheInterface::class);
-        $primary->has($key)->shouldBeCalled()->wilLReturn(reject(new \Exception('fail!')));
+        $primary->has($key)->shouldBeCalled()->willReturn(reject(new Exception('fail!')));
 
         $fallback = $this->prophesize(CacheInterface::class);
-        $fallback->has($key)->shouldBeCalled()->wilLReturn(resolve(true));
+        $fallback->has($key)->shouldBeCalled()->willReturn(resolve(true));
 
         $fallbackCache = new Fallback($primary->reveal(), $fallback->reveal());
         self::assertFalse($this->await($fallbackCache->has($key)));
@@ -167,10 +161,10 @@ final class FallbackTest extends AsyncTestCase
     public function testClear(): void
     {
         $primary = $this->prophesize(CacheInterface::class);
-        $primary->clear()->shouldBeCalled()->wilLReturn(resolve(true));
+        $primary->clear()->shouldBeCalled()->willReturn(resolve(true));
 
         $fallback = $this->prophesize(CacheInterface::class);
-        $fallback->clear()->shouldBeCalled()->wilLReturn(resolve(true));
+        $fallback->clear()->shouldBeCalled()->willReturn(resolve(true));
 
         $fallbackCache = new Fallback($primary->reveal(), $fallback->reveal());
         self::assertTrue($this->await($fallbackCache->clear()));
@@ -179,10 +173,10 @@ final class FallbackTest extends AsyncTestCase
     public function testClearException(): void
     {
         $primary = $this->prophesize(CacheInterface::class);
-        $primary->clear()->shouldBeCalled()->wilLReturn(reject(new \Exception('fail!')));
+        $primary->clear()->shouldBeCalled()->willReturn(reject(new Exception('fail!')));
 
         $fallback = $this->prophesize(CacheInterface::class);
-        $fallback->clear()->shouldBeCalled()->wilLReturn(resolve(true));
+        $fallback->clear()->shouldBeCalled()->willReturn(resolve(true));
 
         $fallbackCache = new Fallback($primary->reveal(), $fallback->reveal());
         self::assertFalse($this->await($fallbackCache->clear()));
@@ -190,11 +184,9 @@ final class FallbackTest extends AsyncTestCase
 
     public function testSetMultiple(): void
     {
-        $key = 'sleutel';
-        $json = [
-            'foo' => 'bar',
-        ];
-        $ttl = 123;
+        $key  = 'sleutel';
+        $json = ['foo' => 'bar'];
+        $ttl  = 123;
 
         $primary = $this->prophesize(CacheInterface::class);
         $primary->setMultiple([$key => $json], $ttl)->shouldBeCalled()->willReturn(resolve(true));
@@ -203,17 +195,15 @@ final class FallbackTest extends AsyncTestCase
         $fallback->setMultiple([$key => $json], $ttl)->shouldBeCalled()->willReturn(resolve(true));
 
         $fallbackCache = new Fallback($primary->reveal(), $fallback->reveal());
-        $result = $this->await($fallbackCache->setMultiple([$key => $json], $ttl));
+        $result        = $this->await($fallbackCache->setMultiple([$key => $json], $ttl));
         self::assertTrue($result);
     }
 
     public function testSetMultipleOneFails(): void
     {
-        $key = 'sleutel';
-        $json = [
-            'foo' => 'bar',
-        ];
-        $ttl = 123;
+        $key  = 'sleutel';
+        $json = ['foo' => 'bar'];
+        $ttl  = 123;
 
         $primary = $this->prophesize(CacheInterface::class);
         $primary->setMultiple([$key => $json], $ttl)->shouldBeCalled()->willReturn(resolve(false));
@@ -222,89 +212,76 @@ final class FallbackTest extends AsyncTestCase
         $fallback->setMultiple([$key => $json], $ttl)->shouldBeCalled()->willReturn(resolve(true));
 
         $fallbackCache = new Fallback($primary->reveal(), $fallback->reveal());
-        $result = $this->await($fallbackCache->setMultiple([$key => $json], $ttl));
+        $result        = $this->await($fallbackCache->setMultiple([$key => $json], $ttl));
         self::assertFalse($result);
     }
 
     public function testSetMultipleException(): void
     {
-        $key = 'sleutel';
-        $json = [
-            'foo' => 'bar',
-        ];
-        $ttl = 123;
+        $key  = 'sleutel';
+        $json = ['foo' => 'bar'];
+        $ttl  = 123;
 
         $primary = $this->prophesize(CacheInterface::class);
-        $primary->setMultiple([$key => $json], $ttl)->shouldBeCalled()->wilLReturn(reject(new \Exception('fail!')));
+        $primary->setMultiple([$key => $json], $ttl)->shouldBeCalled()->willReturn(reject(new Exception('fail!')));
 
         $fallback = $this->prophesize(CacheInterface::class);
         $fallback->setMultiple([$key => $json], $ttl)->shouldBeCalled()->willReturn(resolve(true));
 
         $fallbackCache = new Fallback($primary->reveal(), $fallback->reveal());
-        $result = $this->await($fallbackCache->setMultiple([$key => $json], $ttl));
+        $result        = $this->await($fallbackCache->setMultiple([$key => $json], $ttl));
         self::assertFalse($result);
     }
 
     public function testDeleteMultiple(): void
     {
         $key = 'sleutel';
-        $json = [
-            'foo' => 'bar',
-        ];
 
         $primary = $this->prophesize(CacheInterface::class);
-        $primary->deleteMultiple([$key => $json])->shouldBeCalled()->willReturn(resolve(true));
+        $primary->deleteMultiple([$key])->shouldBeCalled()->willReturn(resolve(true));
 
         $fallback = $this->prophesize(CacheInterface::class);
-        $fallback->deleteMultiple([$key => $json])->shouldBeCalled()->willReturn(resolve(true));
+        $fallback->deleteMultiple([$key])->shouldBeCalled()->willReturn(resolve(true));
 
         $fallbackCache = new Fallback($primary->reveal(), $fallback->reveal());
-        $result = $this->await($fallbackCache->deleteMultiple([$key => $json]));
+        $result        = $this->await($fallbackCache->deleteMultiple([$key]));
         self::assertTrue($result);
     }
 
     public function testDeleteMultipleOneFails(): void
     {
         $key = 'sleutel';
-        $json = [
-            'foo' => 'bar',
-        ];
 
         $primary = $this->prophesize(CacheInterface::class);
-        $primary->deleteMultiple([$key => $json])->shouldBeCalled()->willReturn(resolve(false));
+        $primary->deleteMultiple([$key])->shouldBeCalled()->willReturn(resolve(false));
 
         $fallback = $this->prophesize(CacheInterface::class);
-        $fallback->deleteMultiple([$key => $json])->shouldBeCalled()->willReturn(resolve(true));
+        $fallback->deleteMultiple([$key])->shouldBeCalled()->willReturn(resolve(true));
 
         $fallbackCache = new Fallback($primary->reveal(), $fallback->reveal());
-        $result = $this->await($fallbackCache->deleteMultiple([$key => $json]));
+        $result        = $this->await($fallbackCache->deleteMultiple([$key]));
         self::assertFalse($result);
     }
 
     public function testDeleteMultipleException(): void
     {
         $key = 'sleutel';
-        $json = [
-            'foo' => 'bar',
-        ];
 
         $primary = $this->prophesize(CacheInterface::class);
-        $primary->deleteMultiple([$key => $json])->shouldBeCalled()->wilLReturn(reject(new \Exception('fail!')));
+        $primary->deleteMultiple([$key])->shouldBeCalled()->willReturn(reject(new Exception('fail!')));
 
         $fallback = $this->prophesize(CacheInterface::class);
-        $fallback->deleteMultiple([$key => $json])->shouldBeCalled()->willReturn(resolve(true));
+        $fallback->deleteMultiple([$key])->shouldBeCalled()->willReturn(resolve(true));
 
         $fallbackCache = new Fallback($primary->reveal(), $fallback->reveal());
-        $result = $this->await($fallbackCache->deleteMultiple([$key => $json]));
+        $result        = $this->await($fallbackCache->deleteMultiple([$key]));
         self::assertFalse($result);
     }
 
     public function testGetMultiple(): void
     {
-        $key = 'sleutel';
-        $json = [
-            'foo' => 'bar',
-        ];
+        $key     = 'sleutel';
+        $json    = ['foo' => 'bar'];
         $default = null;
 
         $primary = $this->prophesize(CacheInterface::class);
@@ -314,16 +291,14 @@ final class FallbackTest extends AsyncTestCase
         $fallback->getMultiple([$key], $default)->shouldNotBeCalled();
 
         $fallbackCache = new Fallback($primary->reveal(), $fallback->reveal());
-        $result = $this->await($fallbackCache->getMultiple([$key]));
+        $result        = $this->await($fallbackCache->getMultiple([$key]));
         self::assertSame([$key => $json], $result);
     }
 
     public function testGetMultipleOneFails(): void
     {
-        $key = 'sleutel';
-        $json = [
-            'foo' => 'bar',
-        ];
+        $key     = 'sleutel';
+        $json    = ['foo' => 'bar'];
         $default = null;
 
         $primary = $this->prophesize(CacheInterface::class);
@@ -333,7 +308,7 @@ final class FallbackTest extends AsyncTestCase
         $fallback->getMultiple([$key], $default)->shouldBeCalled()->willReturn(resolve([$key => $json]));
 
         $fallbackCache = new Fallback($primary->reveal(), $fallback->reveal());
-        $result = $this->await($fallbackCache->getMultiple([$key]));
+        $result        = $this->await($fallbackCache->getMultiple([$key]));
         self::assertSame([$key => $json], $result);
     }
 }
